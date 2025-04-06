@@ -1,0 +1,179 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: client:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: client-config
+                  key: NODE_ENV
+            - name: REACT_APP_USERS_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: client-config
+                  key: REACT_APP_USERS_SERVICE_URL
+          volumeMounts:
+            - name: client-volume
+              mountPath: /usr/src/app
+            - name: users-volume
+              mountPath: /usr/src/app
+
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: users
+  labels:
+    app: users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users
+          image: users:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: FLASK_ENV
+            - name: APP_SETTINGS
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: APP_SETTINGS
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: DATABASE_URL
+            - name: DATABASE_TEST_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: DATABASE_TEST_URL
+          volumeMounts:
+            - name: users-volume
+              mountPath: /usr/src/app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-volume
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: nginx-volume
+          configMap:
+            name: nginx-config
+
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: users-db
+  labels:
+    app: users-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-db
+  template:
+    metadata:
+      labels:
+        app: users-db
+    spec:
+      containers:
+        - name: users-db
+          image: postgres:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: users-db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: users-db-secret
+                  key: password
+          volumeMounts:
+            - name: db-volume
+              mountPath: /var/lib/postgresql/data

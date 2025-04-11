@@ -18,8 +18,9 @@ RUN pip install --upgrade pip && \
 
 # add entrypoint.sh
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+COPY init_db.py /usr/src/app/init_db.py
 RUN chmod +x /usr/src/app/entrypoint.sh
-
+RUN chmod +x /usr/src/app/init_db.py
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
 

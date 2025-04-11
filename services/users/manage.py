@@ -11,6 +11,7 @@ from project import create_app, db
 from project.api.models import User
 
 
+
 COV = coverage.coverage(
     branch=True,
     include='project/*',
@@ -23,7 +24,6 @@ COV.start()
 
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
-
 
 @cli.command('recreate_db')
 def recreate_db():

@@ -7,12 +7,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_cors import CORS
+from flask_migrate import Migrate
 
 
 # instantiate the extensions
 db = SQLAlchemy()
 toolbar = DebugToolbarExtension()
-cors = CORS()
+cors = CORS(app=None)
+migrate = Migrate()
 
 
 def create_app(script_info=None):
@@ -26,8 +28,11 @@ def create_app(script_info=None):
 
     # set up extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     toolbar.init_app(app)
     cors.init_app(app)
+
+    from project.api.models import User
 
     # register blueprints
     from project.api.users import users_blueprint
@@ -36,6 +41,6 @@ def create_app(script_info=None):
     # shell context for flask cli
     @app.shell_context_processor
     def ctx():
-        return {'app': app, 'db': db}
+        return {'app': app, 'db': db, 'User': User}
 
     return app

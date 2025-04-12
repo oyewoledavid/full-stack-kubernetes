@@ -12,11 +12,15 @@ services:
       - 5001:5000
     environment:
       - FLASK_ENV=development
+      - CACHE_TYPE=RedisCache
+      - CACHE_REDIS_HOST=redis
+      - CACHE_REDIS_PORT=6379
       - APP_SETTINGS=project.config.DevelopmentConfig
       - DATABASE_URL=postgresql://postgres:postgres@users-db:5432/users_dev
       - DATABASE_TEST_URL=postgresql://postgres:postgres@users-db:5432/users_test
     depends_on:
       - users-db
+      - redis
 
   users-db:
     build:
@@ -53,3 +57,8 @@ services:
     depends_on:
       - users
       - client
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"

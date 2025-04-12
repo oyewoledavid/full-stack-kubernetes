@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_caching import Cache
 
 
 # instantiate the extensions
@@ -15,6 +16,7 @@ db = SQLAlchemy()
 toolbar = DebugToolbarExtension()
 cors = CORS(app=None)
 migrate = Migrate()
+cache = Cache()
 
 
 def create_app(script_info=None):
@@ -26,11 +28,19 @@ def create_app(script_info=None):
     app_settings = os.getenv('APP_SETTINGS')
     app.config.from_object(app_settings)
 
+        # Config for Redis cache
+    app.config['CACHE_TYPE'] = 'RedisCache'
+    app.config['CACHE_REDIS_HOST'] = os.environ.get('REDIS_HOST', 'redis')
+    app.config['CACHE_REDIS_PORT'] = os.environ.get('REDIS_PORT', 6379)
+    app.config['CACHE_REDIS_DB'] = 0
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # seconds
+
     # set up extensions
     db.init_app(app)
     migrate.init_app(app, db)
     toolbar.init_app(app)
     cors.init_app(app)
+    cache.init_app(app)
 
     from project.api.models import User
 

@@ -7,6 +7,7 @@ from flask_restful import Resource, Api
 
 from project import db
 from project.api.models import User
+from project import cache  # makes sure it's imported
 
 
 users_blueprint = Blueprint('users', __name__, template_folder='./templates')
@@ -14,6 +15,7 @@ api = Api(users_blueprint)
 
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
+@cache.cached(timeout=60)
 def index():
     if request.method == 'POST':
         username = request.form['username']
@@ -22,6 +24,19 @@ def index():
         db.session.commit()
     users = User.query.all()
     return render_template('index.html', users=users)
+
+@cache.cached(timeout=60)
+def users_json():
+    users = User.query.all()
+    return jsonify([user.to_json() for user in users])
+
+users_blueprint.add_url_rule('/users/json', view_func=users_json)
+
+users_blueprint.add_url_rule(
+    '/users/json', 
+    view_func=users_json, 
+    methods=['GET']
+)
 
 
 class UsersPing(Resource):

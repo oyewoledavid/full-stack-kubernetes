@@ -4,10 +4,13 @@ metadata:
   name: users-config
   namespace: default
 data:
+  CACHE_TYPE: RedisCache
+  CACHE_REDIS_HOST: redis
+  CACHE_REDIS_PORT: 6379
   FLASK_ENV: development
   APP_SETTINGS: project.config.DevelopmentConfig
-  DATABASE_URL: postgres://postgres:postgres@users-db:5432/users_dev
-  DATABASE_TEST_URL: postgres://postgres:postgres@users-db:5432/users_test
+  DATABASE_URL: postgresql://postgres:postgres@users-db:5432/users_dev
+  DATABASE_TEST_URL: postgresql://postgres:postgres@users-db:5432/users_test
 
 ---
 apiVersion: v1
@@ -16,7 +19,7 @@ metadata:
   name: client-config
 data:
   NODE_ENV: development
-  REACT_APP_USERS_SERVICE_URL: http://users:5000
+  REACT_APP_USERS_SERVICE_URL: http://users:5001
 
 ---
 apiVersion: v1

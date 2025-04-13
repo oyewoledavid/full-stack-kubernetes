@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: client:latest
+          image: oyewoledavid/client:latest
           resources:
             requests:
               memory: "256Mi"
@@ -40,8 +40,6 @@ spec:
           volumeMounts:
             - name: client-volume
               mountPath: /usr/src/app
-            - name: users-volume
-              mountPath: /usr/src/app
 
 ---
 apiVersion: v1
@@ -62,7 +60,7 @@ spec:
     spec:
       containers:
         - name: users
-          image: users:latest
+          image: oyewoledavid/users:latest
           resources:
             requests:
               memory: "256Mi"
@@ -71,7 +69,7 @@ spec:
               memory: "512Mi"
               cpu: "1"
           ports:
-            - containerPort: 5000
+            - containerPort: 5001
           env:
             - name: FLASK_ENV
               valueFrom:
@@ -93,6 +91,21 @@ spec:
                 configMapKeyRef:
                   name: users-config
                   key: DATABASE_TEST_URL
+            - name: CACHE_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: CACHE_TYPE
+            - name: CACHE_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: CACHE_REDIS_HOST
+            - name: CACHE_REDIS_PORT  
+              valueFrom:
+                configMapKeyRef:
+                  name: users-config
+                  key: CACHE_REDIS_PORT
           volumeMounts:
             - name: users-volume
               mountPath: /usr/src/app
@@ -116,7 +129,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: nginx:latest
+          image: oyewoledavid/nginx:latest
           resources:
             requests:
               memory: "256Mi"
@@ -153,7 +166,7 @@ spec:
     spec:
       containers:
         - name: users-db
-          image: postgres:latest
+          image: oyewoledavid/users-db:latest
           resources:
             requests:
               memory: "256Mi"
@@ -174,8 +187,48 @@ spec:
                 secretKeyRef:
                   name: users-db-secret
                   key: password
-            - name: POSTGRES_DB
-              value: users_dev
+        volumes:
+          - name: db-volume
+            persistentVolumeClaim:
+              claimName: users-db-pvc
           volumeMounts:
             - name: db-volume
               mountPath: /var/lib/postgresql/data
+
+
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-volume
+              mountPath: /data
+      volumes:
+        - name: redis-volume
+          persistentVolumeClaim:
+            claimName: redis-pvc

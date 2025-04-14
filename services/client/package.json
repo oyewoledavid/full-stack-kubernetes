@@ -27,6 +27,6 @@
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.11.2"
   },
-  "proxy": "http://users:5001"
+  "proxy": "http://users:5000"
 
 }

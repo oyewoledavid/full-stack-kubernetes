@@ -23,6 +23,7 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/init_db.py
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
+EXPOSE 5000
 
 # add app
 COPY . /usr/src/app

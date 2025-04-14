@@ -14,5 +14,5 @@ echo "Running database migrations..."
 # Run database table creation
 python init_db.py
 
-
-python manage.py run -h 0.0.0.0
+echo "🚀 Starting Flask app..."
+exec python manage.py run -h 0.0.0.0

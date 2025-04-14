@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
+  namespace: full-stack-deployment
   labels:
     app: client
 spec:
@@ -25,7 +26,8 @@ spec:
               memory: "512Mi"
               cpu: "1"
           ports:
-            - containerPort: 3000
+            - protocol: TCP
+              containerPort: 3000
           env:
             - name: NODE_ENV
               valueFrom:
@@ -36,16 +38,14 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: client-config
-                  key: REACT_APP_USERS_SERVICE_URL
-          volumeMounts:
-            - name: client-volume
-              mountPath: /usr/src/app
+                  key: REACT_APP_USERS_SERVICE_URL          
 
 ---
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: users
+  namespace: full-stack-deployment
   labels:
     app: users
 spec:
@@ -69,7 +69,8 @@ spec:
               memory: "512Mi"
               cpu: "1"
           ports:
-            - containerPort: 5001
+            - protocol: TCP
+              containerPort: 5001
           env:
             - name: FLASK_ENV
               valueFrom:
@@ -106,15 +107,15 @@ spec:
                 configMapKeyRef:
                   name: users-config
                   key: CACHE_REDIS_PORT
-          volumeMounts:
-            - name: users-volume
-              mountPath: /usr/src/app
+
+
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
+  namespace: full-stack-deployment
   labels:
     app: nginx
 spec:
@@ -125,8 +126,12 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginx   
     spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
       containers:
         - name: nginx
           image: oyewoledavid/nginx:latest
@@ -140,18 +145,15 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: nginx-volume
+            - name: nginx-config
               mountPath: /etc/nginx/conf.d
-      volumes:
-        - name: nginx-volume
-          configMap:
-            name: nginx-config
 
 ---
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: users-db
+  namespace: full-stack-deployment
   labels:
     app: users-db
 spec:
@@ -164,6 +166,10 @@ spec:
       labels:
         app: users-db
     spec:
+      volumes:
+        - name: users-db-pv
+          persistentVolumeClaim:
+            claimName: users-db-pvc
       containers:
         - name: users-db
           image: oyewoledavid/users-db:latest
@@ -175,8 +181,11 @@ spec:
               memory: "512Mi"
               cpu: "1"
           ports:
-            - containerPort: 5432
+            - protocol: TCP
+              containerPort: 5432
           env:
+            - name: POSTGRES_DB
+              value: users_dev
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -187,20 +196,17 @@ spec:
                 secretKeyRef:
                   name: users-db-secret
                   key: password
-        volumes:
-          - name: db-volume
-            persistentVolumeClaim:
-              claimName: users-db-pvc
           volumeMounts:
-            - name: db-volume
+            - name: users-db-pv
               mountPath: /var/lib/postgresql/data
 
 
 ---
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
+  namespace: full-stack-deployment
   labels:
     app: redis
 spec:
@@ -213,6 +219,10 @@ spec:
       labels:
         app: redis
     spec:
+      volumes:
+        - name: redis-pv
+          persistentVolumeClaim:
+            claimName: redis-pvc
       containers:
         - name: redis
           image: redis:latest
@@ -224,11 +234,8 @@ spec:
               memory: "512Mi"
               cpu: "1"
           ports:
-            - containerPort: 6379
+            - protocol: TCP
+              containerPort: 6379
           volumeMounts:
-            - name: redis-volume
+            - name: redis-pv
               mountPath: /data
-      volumes:
-        - name: redis-volume
-          persistentVolumeClaim:
-            claimName: redis-pvc

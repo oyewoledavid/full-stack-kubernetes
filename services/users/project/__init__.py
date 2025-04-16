@@ -16,7 +16,7 @@ db = SQLAlchemy()
 toolbar = DebugToolbarExtension()
 cors = CORS(app=None)
 migrate = Migrate()
-cache = Cache()
+cache = Cache(config={'CACHE_TYPE': 'RedisCache', 'CACHE_REDIS_HOST': 'redis', 'CACHE_REDIS_PORT': 6379})
 
 
 def create_app(script_info=None):
@@ -31,7 +31,10 @@ def create_app(script_info=None):
         # Config for Redis cache
     app.config['CACHE_TYPE'] = 'RedisCache'
     app.config['CACHE_REDIS_HOST'] = os.environ.get('REDIS_HOST', 'redis')
-    app.config['CACHE_REDIS_PORT'] = os.environ.get('REDIS_PORT', 6379)
+    try:
+        app.config['CACHE_REDIS_PORT'] = int(os.environ.get('CACHE_REDIS_PORT_NUMBER', 6379))
+    except ValueError:
+        raise ValueError("Invalid CACHE_REDIS_PORT_NUMBER provided. Must be an integer.")
     app.config['CACHE_REDIS_DB'] = 0
     app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # seconds
 

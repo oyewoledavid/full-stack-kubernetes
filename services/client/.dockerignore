@@ -1,0 +1,28 @@
+node_modules
+build
+*.log
+
+
+# Dependency directories
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Production build output
+build
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# System/Editor stuff
+.DS_Store
+.vscode
+.idea
+
+# Docker artifacts (if generated in client dir)
+Dockerfile
+.dockerignore

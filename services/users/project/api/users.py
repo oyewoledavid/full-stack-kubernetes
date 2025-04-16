@@ -2,7 +2,7 @@
 
 
 from sqlalchemy import exc
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, jsonify
 from flask_restful import Resource, Api
 
 from project import db
@@ -25,18 +25,14 @@ def index():
     users = User.query.all()
     return render_template('index.html', users=users)
 
+@users_blueprint.route('/users', methods=['GET'])
 @cache.cached(timeout=60)
-def users_json():
+def get_all_users():
+    print("Fetching users from DB...")
     users = User.query.all()
-    return jsonify([user.to_json() for user in users])
+    return jsonify([u.to_json() for u in users])
 
-users_blueprint.add_url_rule('/users/json', view_func=users_json)
 
-users_blueprint.add_url_rule(
-    '/users/json', 
-    view_func=users_json, 
-    methods=['GET']
-)
 
 
 class UsersPing(Resource):

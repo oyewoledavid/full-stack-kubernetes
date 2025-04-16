@@ -1,18 +1,18 @@
-# base image
-FROM node:11.12.0-alpine
+# Base image with Node for development
+FROM node:18-alpine
 
-# set working directory
+# Set working directory
 WORKDIR /usr/src/app
-COPY public /usr/src/app/public
-COPY src /usr/src/app/src
-# add `/usr/src/app/node_modules/.bin` to $PATH
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
-# install and cache app dependencies
-COPY package.json /usr/src/app/package.json
-COPY package-lock.json /usr/src/app/package-lock.json
-RUN npm install --silent
-RUN npm install react-scripts@2.1.8 -g --silent
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
 
-# start app
+# Copy app source code
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Start the development server
 CMD ["npm", "start"]

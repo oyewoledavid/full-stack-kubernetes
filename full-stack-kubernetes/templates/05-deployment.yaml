@@ -70,7 +70,7 @@ spec:
               cpu: "1"
           ports:
             - protocol: TCP
-              containerPort: 5001
+              containerPort: 5000
           env:
             - name: FLASK_ENV
               valueFrom:
@@ -106,7 +106,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: users-config
-                  key: CACHE_REDIS_PORT
+                  key: CACHE_REDIS_PORT_NUMBER
 
 
 

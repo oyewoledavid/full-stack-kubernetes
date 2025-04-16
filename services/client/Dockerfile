@@ -1,18 +1,16 @@
-# Base image with Node for development
 FROM node:18-alpine
 
-# Set working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy app source code
 COPY . .
+RUN npm run build
 
-# Expose the port the app runs on
+# Install serve to serve the static files
+RUN npm install -g serve
+
 EXPOSE 3000
 
-# Start the development server
-CMD ["npm", "start"]
+CMD ["serve", "-s", "build", "-l", "3000"]

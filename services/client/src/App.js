@@ -37,9 +37,19 @@ function App() {
     }
   };
 
+  // Fetch users when the component mounts
   useEffect(() => {
-    fetchUsers();
+    fetch("/users")
+      .then((res) => res.json())
+      .then((data) => {
+        const usernames = data.map((user) => ({
+          username: user.username,
+        }));
+        setUsers(usernames);
+      })
+      .catch((err) => console.error("Error fetching users:", err));
   }, []);
+  
 
   return (
     <div className="container">
@@ -66,13 +76,13 @@ function App() {
 
       <div className="users-section">
         <h2>Registered Users</h2>
-        <ul className="user-list">
+        <ol className="user-list">
           {users.map((user) => (
             <li key={user.id}>
-              <strong>{user.username}</strong> — {user.email}
+              <strong>{user.username}</strong>
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </div>
   );

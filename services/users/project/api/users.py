@@ -34,7 +34,6 @@ def get_all_users():
 
 
 
-
 class UsersPing(Resource):
     def get(self):
         return {

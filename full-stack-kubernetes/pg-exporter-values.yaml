@@ -1,0 +1,26 @@
+env:
+  data_source_name: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@users-db.full-stack-deployment.svc.cluster.local:5432/users_dev?sslmode=disable"
+
+envFromSecret: users-db-secret
+
+service:
+  port: 9187
+  targetPort: 9187
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9187"
+  labels:
+    app: prometheus-postgres-exporter  # Make sure this matches your ServiceMonitor selector
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 15s
+  labels:
+    release: prometheus
+  selector:
+    matchLabels:
+      app: prometheus-postgres-exporter
+  namespaceSelector:
+    matchNames:
+      - monitoring

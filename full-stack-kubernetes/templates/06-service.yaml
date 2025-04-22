@@ -9,7 +9,8 @@ spec:
   selector:
     app: client
   ports:
-    - protocol: TCP
+    - name: metrics
+      protocol: TCP
       port: 3000        # Exposes service on port 3000
       targetPort: 3000 # Forwards traffic to React container port (3000)
 
@@ -19,11 +20,14 @@ kind: Service
 metadata:
   name: users-db
   namespace: full-stack-deployment
+  labels:
+    app: users-db
 spec:
   selector:
     app: users-db
   ports:
-    - protocol: TCP
+    - name: metrics
+      protocol: TCP
       port: 5432
       targetPort: 5432
 
@@ -33,11 +37,14 @@ kind: Service
 metadata:
   name: users
   namespace: full-stack-deployment
+  labels:
+    app: users
 spec:
   selector:
     app: users
   ports:
-    - protocol: TCP
+    - name: metrics
+      protocol: TCP
       port: 5000
       targetPort: 5000
 
@@ -47,11 +54,14 @@ kind: Service
 metadata:
   name: nginx
   namespace: full-stack-deployment
+  labels:
+    app: nginx
 spec:
   selector:
     app: nginx
   ports:
-    - protocol: TCP
+    - name: metrics
+      protocol: TCP
       port: 80
       targetPort: 80
   type: NodePort
@@ -62,10 +72,13 @@ kind: Service
 metadata:
   name: redis
   namespace: full-stack-deployment
+  labels:
+    app: redis
 spec:
   selector:
     app: redis
   ports:
-    - protocol: TCP
+    - name: metrics
+      protocol: TCP
       port: 6379
       targetPort: 6379

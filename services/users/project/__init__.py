@@ -9,6 +9,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_caching import Cache
+from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from flask import Response
 
 
 # instantiate the extensions
@@ -24,9 +27,16 @@ def create_app(script_info=None):
     # instantiate the app
     app = Flask(__name__)
 
+    metrics = PrometheusMetrics(app)
+    registry = metrics.registry
+    if 'app_info' not in registry._names_to_collectors:
+        metrics.info('app_info', 'Application info', version='1.0.0')
+
     # set config
     app_settings = os.getenv('APP_SETTINGS', 'project.config.DevelopmentConfig')
     app.config.from_object(app_settings)
+
+
 
         # Config for Redis cache
     app.config['CACHE_TYPE'] = 'RedisCache'
@@ -51,12 +61,17 @@ def create_app(script_info=None):
     from project.api.users import users_blueprint
     app.register_blueprint(users_blueprint)
 
-
+    @app.route("/metrics")
+    def metrics_endpoint():
+        return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
     # shell context for flask cli
     @app.shell_context_processor
     def ctx():
         return {'app': app, 'db': db, 'User': User}
+
+    print("=== Routes Registered ===")
+    print(app.url_map)
 
 
     return app

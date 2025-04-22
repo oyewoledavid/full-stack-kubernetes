@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: flask-users-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: users
+  namespaceSelector:
+    matchNames:
+      - full-stack-deployment
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+ 

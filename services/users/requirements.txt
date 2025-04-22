@@ -19,3 +19,4 @@ flask-migrate
 alembic
 Flask-Caching
 redis
+prometheus-flask-exporter

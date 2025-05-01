@@ -160,6 +160,12 @@ spec:
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
+        - name: nginx-exporter
+          image: nginx/nginx-prometheus-exporter:latest
+          args:
+            - "-nginx.scrape-uri=http://localhost:80/nginx_status"
+          ports:
+            - containerPort: 9113
 
 ---
 apiVersion: apps/v1

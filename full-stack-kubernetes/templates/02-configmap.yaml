@@ -54,8 +54,10 @@ data:
       }
 
       location /nginx_status {
-      stub_status;
-      deny all;
+        stub_status;
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
       }
 
     }

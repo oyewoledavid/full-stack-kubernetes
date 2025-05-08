@@ -1,0 +1,31 @@
+elasticsearchURL: http://elasticsearch-master.efk.svc.cluster.local:9200
+
+elasticsearchUsername: "elastic"
+elasticsearchPassword:  "wzwP1a39iFEQG1rK" # replace with actual password or use a Secret
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 5601
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+replicaCount: 1
+
+# Optional: avoid memory crashes
+extraEnvs:
+  - name: NODE_OPTIONS
+    value: "--max-old-space-size=1800"
+
+# Optional: fix warnings about encryption key
+xpack:
+  encryptedSavedObjects:
+    encryptionKey: "aVeryVeryVeryVerySecretKey12345!"  # must be 32 characters

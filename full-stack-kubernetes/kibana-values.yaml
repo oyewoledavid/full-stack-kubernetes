@@ -1,7 +1,7 @@
 elasticsearchURL: http://elasticsearch-master.efk.svc.cluster.local:9200
 
 elasticsearchUsername: "elastic"
-elasticsearchPassword:  "wzwP1a39iFEQG1rK" # replace with actual password or use a Secret
+elasticsearchPassword:  "E57BvLHTobLTdUJN" # replace with actual password or use a Secret
 
 ingress:
   enabled: false
@@ -28,4 +28,6 @@ extraEnvs:
 # Optional: fix warnings about encryption key
 xpack:
   encryptedSavedObjects:
-    encryptionKey: "aVeryVeryVeryVerySecretKey12345!"  # must be 32 characters
+    encryptionKey: "c9cbf98843c0541febe50109f8e154849607c78d3372471a967f5ccbb9181ed6"  # must be 32 characters
+  reporting:
+    encryptionKey: "261947241e40061778363a45d37d2f1bf72d581020fcc1ff327f876082a572ce"

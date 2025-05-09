@@ -1,12 +1,12 @@
 backend:
   type: es
   es:
-    host: elasticsearch-master
+    host: elasticsearch-master.efk.svc.cluster.local
     port: 9200
     tls:
       enabled: false
       verify: false
     auth:
-      enabled: true
+      enabled: false
       username: elastic
-      password: 5uokn6o0rzRwmU0D
+      password: E57BvLHTobLTdUJN

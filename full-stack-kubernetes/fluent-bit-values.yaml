@@ -1,0 +1,12 @@
+backend:
+  type: es
+  es:
+    host: elasticsearch-master
+    port: 9200
+    tls:
+      enabled: false
+      verify: false
+    auth:
+      enabled: true
+      username: elastic
+      password: 5uokn6o0rzRwmU0D

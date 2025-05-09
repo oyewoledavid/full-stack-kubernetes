@@ -20,8 +20,8 @@ spec:
           image: oyewoledavid/client:latest
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "1"
@@ -67,8 +67,8 @@ spec:
           image: oyewoledavid/users:latest
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "1"
@@ -145,8 +145,8 @@ spec:
           image: oyewoledavid/nginx:latest
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "1"
@@ -194,8 +194,8 @@ spec:
           image: oyewoledavid/users-db:latest
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "1"
@@ -244,8 +244,8 @@ spec:
           image: redis:latest
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "1"

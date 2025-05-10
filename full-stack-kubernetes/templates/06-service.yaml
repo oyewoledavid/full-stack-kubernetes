@@ -22,6 +22,10 @@ metadata:
   namespace: full-stack-deployment
   labels:
     app: users-db
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5432"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: users-db
@@ -39,6 +43,10 @@ metadata:
   namespace: full-stack-deployment
   labels:
     app: users
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: users
@@ -47,6 +55,7 @@ spec:
       protocol: TCP
       port: 5000
       targetPort: 5000
+  type: NodePort
 
 ---
 apiVersion: v1
@@ -56,6 +65,10 @@ metadata:
   namespace: full-stack-deployment
   labels:
     app: nginx
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9113"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: nginx
@@ -77,6 +90,10 @@ metadata:
   namespace: full-stack-deployment
   labels:
     app: redis
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "6379"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: redis

@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-exporter-sm
+  namespace: monitoring
+  labels:
+    release: prometheus         # ← This tells Prometheus Operator to watch it
+spec:
+  selector:
+    matchLabels:
+      app: redis-exporter       # ← Must match your Redis Exporter Service’s labels
+  namespaceSelector:
+    matchNames:
+      - monitoring              # ← Namespace where the Service lives
+  endpoints:
+    - port: metrics              # ← The port your exporter serves metrics on
+      interval: 15s
+      path: /metrics

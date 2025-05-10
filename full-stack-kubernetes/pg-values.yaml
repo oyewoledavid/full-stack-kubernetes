@@ -1,0 +1,36 @@
+## pg-values.yaml
+
+## Tell the chart to pull the DATA_SOURCE_NAME from our secret
+env:
+  - name: DATA_SOURCE_NAME
+    valueFrom:
+      secretKeyRef:
+        name: users-db-secret
+        key: data_source_name
+
+## Service settings for the exporter itself
+service:
+  port: 9187
+  targetPort: 9187
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9187"
+  labels:
+    app: prometheus-postgres-exporter
+  type: ClusterIP
+
+## Enable ServiceMonitor (the CRD that the Prometheus Operator watches)
+serviceMonitor:
+  enabled: true
+  ## serviceMonitor lives in the same namespace as Prometheus itself
+  namespace: monitoring
+  interval: 15s
+  labels:
+    release: prometheus
+  selector:
+    matchLabels:
+      app: prometheus-postgres-exporter
+  namespaceSelector:
+    ## which namespaces to look for Services in
+    matchNames:
+      - monitoring

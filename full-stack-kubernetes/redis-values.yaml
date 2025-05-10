@@ -1,0 +1,26 @@
+## values-redis.yaml
+
+# Point at your existing Redis service in full-stack-deployment
+redisAddress: "redis://redis.full-stack-deployment.svc.cluster.local:6379"
+
+# Service definition for the exporter itself (in 'monitoring')
+service:
+  type: ClusterIP
+  port: 9121
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9121"
+  labels:
+    app: redis-exporter
+
+# Tell the chart to generate a ServiceMonitor in 'monitoring'
+serviceMonitor:
+  enabled: true
+  namespace: monitoring         # where your Prometheus Operator is watching
+  interval: 15s
+  selector:
+    matchLabels:
+      app: redis-exporter
+  namespaceSelector:
+    matchNames:
+      - monitoring

@@ -1,0 +1,46 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: full-stack-alert-rules
+  namespace: monitoring
+  labels:   # Must match your Prometheus's selector
+    alert: full-stack-alert-rules
+spec:
+  groups:
+  - name: full-stack.rules
+    rules:
+    - alert: PodDown
+      expr: kube_pod_status_ready{namespace="full-stack-deployment", condition="true"} == 0
+      for: 7s
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod is down in full-stack-deployment"
+        description: "Pod {{ $labels.pod }} is not ready for more than 2 minutes."
+
+    - alert: HighCPUUsage
+      expr: sum(rate(container_cpu_usage_seconds_total{namespace="full-stack-deployment"}[2m])) by (pod) > 0.8
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage in full-stack-deployment"
+        description: "Pod {{ $labels.pod }} is using high CPU."
+
+    - alert: HighMemoryUsage
+      expr: sum(container_memory_usage_bytes{namespace="full-stack-deployment"}) by (pod) > (512 * 1024 * 1024)  # 512MB
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High memory usage in full-stack-deployment"
+        description: "Pod {{ $labels.pod }} is using more than 512MB of memory."
+
+    - alert: ContainerRestarts
+      expr: increase(kube_pod_container_status_restarts_total{namespace="full-stack-deployment"}[5m]) > 1
+      for: 30s
+      labels:
+        severity: warning
+      annotations:
+        summary: "Pod is restarting frequently"
+        description: "Container {{ $labels.container }} in pod {{ $labels.pod }} restarted more than once in the last 5 minutes."

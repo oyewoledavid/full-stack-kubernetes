@@ -12,7 +12,7 @@ This project is a full-stack web application built to demonstrate end-to-end Dev
 - **Caching Layer:** Redis
 - **Reverse Proxy:** NGINX
 - **Containerization:** Docker
-- **Orchestration:** Kubernetes (MicroK8s)
+- **Orchestration:** Kubernetes (Minikube)
 - **Deployment Management:** Helm
 - **CI/CD:** GitHub Actions with self-hosted runner
 - **Monitoring:** Prometheus & Grafana
@@ -44,14 +44,14 @@ This project is a full-stack web application built to demonstrate end-to-end Dev
 
     🚨 Slack alerts through Alertmanager on key metrics
 
-    💻 Local-first setup using MicroK8s
+    💻 Local-first setup using Minikube
 
 ## 🚀 Getting Started
 Prerequisites
 
     Docker
 
-    MicroK8s
+    Minikube
 
     Helm
 
@@ -68,7 +68,7 @@ git clone https://github.com/oyewoledavid/full-stack-kubernetes.git
 cd devops-full-stack-kubernetes
 ``` 
 
-2. Deploy to MicroK8s with Helm
+2. Deploy to Minikube with Helm
 
 ```bash
 helm install full-stack-kubernetes /full-stack-kubernetes

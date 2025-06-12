@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: client
-          image: oyewoledavid/client:latest
+          image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
+          imagePullPolicy: "{{ .Values.client.image.pullPolicy }}"
           resources:
             requests:
               memory: "128Mi"
@@ -64,7 +65,8 @@ spec:
     spec:
       containers:
         - name: users
-          image: oyewoledavid/users:latest
+          image: "{{ .Values.users.image.repository }}:{{ .Values.users.image.tag }}"
+          imagePullPolicy: "{{ .Values.users.image.pullPolicy }}"
           resources:
             requests:
               memory: "128Mi"
@@ -142,7 +144,8 @@ spec:
             name: nginx-config
       containers:
         - name: nginx
-          image: oyewoledavid/nginx:latest
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: "{{ .Values.nginx.image.pullPolicy }}"
           resources:
             requests:
               memory: "128Mi"
@@ -191,7 +194,8 @@ spec:
             claimName: users-db-pvc
       containers:
         - name: users-db
-          image: oyewoledavid/users-db:latest
+          image: "{{ .Values.users-db.image.repository }}:{{ .Values.users-db.image.tag }}"
+          imagePullPolicy: "{{ .Values.users-db.image.pullPolicy }}"
           resources:
             requests:
               memory: "128Mi"

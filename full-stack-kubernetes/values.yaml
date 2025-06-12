@@ -1,0 +1,23 @@
+client:
+  image:
+    repository: oyewoledavid/client
+    tag: latest
+    pullPolicy: Always
+
+users:
+  image:
+    repository: oyewoledavid/users
+    tag: latest
+    pullPolicy: Always
+
+nginx:
+  image:
+    repository: oyewoledavid/nginx
+    tag: latest
+    pullPolicy: Always
+
+users-db:
+  image:
+    repository: oyewoledavid/users-db
+    tag: latest
+    pullPolicy: Always

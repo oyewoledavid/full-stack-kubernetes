@@ -6,9 +6,13 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  IMAGE_TAG: ${{ github.sha }}
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
+
 
     steps:
       - name: Checkout source code
@@ -22,23 +26,23 @@ jobs:
 
       - name: Build and push client image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/client:latest ./services/client
-          docker push ${{ secrets.DOCKER_USERNAME }}/client:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/client:${{env.IMAGE_TAG}} ./services/client
+          docker push ${{ secrets.DOCKER_USERNAME }}/client:${{env.IMAGE_TAG}}
 
       - name: Build and push users image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/users:latest ./services/users
-          docker push ${{ secrets.DOCKER_USERNAME }}/users:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/users:${{env.IMAGE_TAG}} ./services/users
+          docker push ${{ secrets.DOCKER_USERNAME }}/users:${{env.IMAGE_TAG}}
 
       - name: Build and push nginx image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/nginx:latest ./services/nginx
-          docker push ${{ secrets.DOCKER_USERNAME }}/nginx:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nginx:${{env.IMAGE_TAG}} ./services/nginx
+          docker push ${{ secrets.DOCKER_USERNAME }}/nginx:${{env.IMAGE_TAG}}
 
       - name: Build and push users-db image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/users-db:latest ./services/users/project/db
-          docker push ${{ secrets.DOCKER_USERNAME }}/users-db:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/users-db:${{env.IMAGE_TAG}} ./services/users/project/db
+          docker push ${{ secrets.DOCKER_USERNAME }}/users-db:${{env.IMAGE_TAG}}
 
   deploy-to-minikube:
     needs: build-and-push
@@ -52,4 +56,8 @@ jobs:
 
       - name: Deploy using Helm
         run: |
-          helm upgrade --install full-stack-kubernetes ./full-stack-kubernetes
+          helm upgrade --install full-stack-kubernetes ./full-stack-kubernetes \
+          --set client.image.tag=${{ env.IMAGE_TAG }} \
+          --set users.image.tag=${{ env.IMAGE_TAG }} \
+          --set nginx.image.tag=${{ env.IMAGE_TAG }} \
+          --set users-db.image.tag=${{ env.IMAGE_TAG }} 

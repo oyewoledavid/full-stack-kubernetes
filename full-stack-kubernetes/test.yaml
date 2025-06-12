@@ -1,0 +1,12 @@
+receivers:
+      - name: slack-notifications
+        slack_configs:
+          - send_resolved: true
+            channel: '#alerts'
+            # Use the Secret if you created it; otherwise uncomment the next line
+            api_url:
+            #  secret:
+            #    name: alertmanager-slack-config
+            #    key: SLACK_API_URL
+            # If not using a Secret, put your webhook directly:
+            # api_url: 'https://hooks.slack.com/services/XXX/YYY/ZZZ'

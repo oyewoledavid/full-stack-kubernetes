@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack-config
+  namespace: monitoring
+spec:
+  route:
+    receiver: "slack-notifications"
+  receivers:
+    - name: "slack-notifications"
+      slackConfigs:
+        - channel: "#alerts"
+          sendResolved: true
+          apiURL:
+            key: slack_api_url
+            name: alertmanager-slack-secret

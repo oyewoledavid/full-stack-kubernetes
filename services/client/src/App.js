@@ -70,7 +70,7 @@ function App() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button type="submit">Submit</button>
+        <button type="submit">Register</button>
       </form>
       {error && <p className="error">{error}</p>}
 

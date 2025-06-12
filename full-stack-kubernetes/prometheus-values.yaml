@@ -1,0 +1,127 @@
+## CoreOS Prometheus Operator configuration
+##
+prometheusOperator:
+  ## Enable or disable the Prometheus Operator
+  enabled: true
+
+
+## Prometheus configuration
+##
+prometheus:
+  enabled: true
+  prometheusSpec:
+    scrapeInterval: 5s
+    evaluationInterval: 5s
+    # Discover all ServiceMonitors & your custom rules
+    serviceMonitorSelector: {}
+    ruleSelector:
+      matchLabels:
+        alert: full-stack-alert-rules
+    # Tell Prometheus how to reach Alertmanager (internal DNS)
+    alertingEndpoints:
+      - name: prometheus-kube-prometheus-alertmanager
+        namespace: monitoring
+        port: http-web
+    retention: 10d
+    alertmanagerConfigSelector: {}
+    alertmanagerConfigNamespaceSelector: {}
+  
+  service:
+    enabled: true
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9090"
+    type: NodePort
+    portName: web
+    port: 9090
+    targetPort: 9090
+    servicePort: 9090
+
+ 
+## Alertmanager configuration
+##
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    config: # <--- THIS MUST BE AT THE SAME INDENTATION LEVEL AS 'alertmanagerSpec' and 'routePrefix'
+      global:
+        resolve_timeout: 5m
+
+      inhibit_rules:
+        - equal: ["namespace","alertname"]
+          source_matchers: ["severity = critical"]
+          target_matchers: ["severity =~ warning|info"]
+        - equal: ["namespace","alertname"]
+          source_matchers: ["severity = warning"]
+          target_matchers: ["severity = info"]
+        # (other inhibit_rules...)
+
+      route:
+        group_by:
+          - alertname
+          - namespace
+        group_wait: 10s
+        group_interval: 10s
+        repeat_interval: 1h
+        receiver: slack-notifications
+        routes:
+          - matchers:
+              - alertname = "Watchdog"
+            receiver: slack-notifications
+
+      receivers:
+        - name: slack-notifications
+          slack_configs:
+            - send_resolved: true
+              channel: '#alerts'
+              api_url:
+                secret:
+                  name: alertmanager-slack-secret
+                  key: slack_api_url
+      # templates:
+      # - /etc/alertmanager/config/*.tmpl
+  service:
+    enabled: true
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9093"
+    type: NodePort
+    port: 9093
+    targetPort: 9093
+    servicePort: 9093    
+
+
+## Grafana configuration
+##
+grafana:
+  ## Enable or disable Grafana
+  enabled: true
+  ## Set the admin password for Grafana
+  adminPassword: "prom-operator" # Change this to a secure password
+  ## Enable or disable persistent storage for Grafana
+  persistence:
+    enabled: false
+    storageClassName: standard # Use your preferred storage class
+    accessModes: ["ReadWriteOnce"]
+    size: 10Gi
+  
+  service:
+    enabled: true
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "3000"
+    type: NodePort
+    port: 3000
+    targetPort: 3000
+    servicePort: 3000
+
+kube-state-metrics:
+  ## Enable or disable Kube State Metrics
+  enabled: true
+
+## Prometheus Node Exporter configuration
+##
+node-exporter:
+  ## Enable or disable Node Exporter
+  enabled: true
+

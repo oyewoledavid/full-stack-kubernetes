@@ -16,7 +16,7 @@ nginx:
     tag: latest
     pullPolicy: Always
 
-users-db:
+usersDb:
   image:
     repository: oyewoledavid/users-db
     tag: latest

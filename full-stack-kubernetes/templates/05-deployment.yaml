@@ -194,8 +194,8 @@ spec:
             claimName: users-db-pvc
       containers:
         - name: users-db
-          image: "{{ .Values.users-db.image.repository }}:{{ .Values.users-db.image.tag }}"
-          imagePullPolicy: "{{ .Values.users-db.image.pullPolicy }}"
+          image: "{{ .Values.usersDb.image.repository }}:{{ .Values.usersDb.image.tag }}"
+          imagePullPolicy: "{{ .Values.usersDb.image.pullPolicy }}"
           resources:
             requests:
               memory: "128Mi"
